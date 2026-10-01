@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // TVG functional phase:
+    // Firebase Authentication is the first gate. Any signed-in TVG account
+    // can use the application's Firestore data while the application
+    // workflow is being stabilized. Role/field-level hardening can be
+    // added later after the workflows are production-verified.
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /{document=**} {
+      allow read, write: if signedIn();
+    }
+  }
+}
